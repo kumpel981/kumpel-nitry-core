@@ -6,179 +6,163 @@ import numpy as np
 import os
 from datetime import datetime
 
-# --- 1. THE KUMPEL NITRY DESIGN SYSTEM ---
-st.set_page_config(page_title="KUMPEL NITRY CORE", page_icon="⚡", layout="wide")
+# --- 1. THE ELITE DESIGN SYSTEM (CSS) ---
+st.set_page_config(page_title="KN CORE | COMMAND", page_icon="⚡", layout="wide")
 
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;500;800&display=swap');
 
-    [data-testid="stAppViewContainer"] { background: #030507; color: #f0f0f0; font-family: 'Space Grotesk', sans-serif; }
-    [data-testid="stSidebar"] { background: #07090c; border-right: 1px solid #1a1e23; }
-    
-    /* 3D "KN" Logo Design */
-    .kn-logo {
-        width: 80px; height: 80px; margin: 0 auto;
-        background: linear-gradient(135deg, #3b82f6 0%, #00ff88 100%);
-        border-radius: 18px; display: flex; align-items: center; justify-content: center;
-        font-size: 34px; font-weight: 800; color: #000;
-        box-shadow: 0 10px 40px rgba(59, 130, 246, 0.4);
-        transform: perspective(500px) rotateX(5deg);
+    /* Global Stealth Theme */
+    [data-testid="stAppViewContainer"] { background: radial-gradient(circle at top, #0d1117 0%, #05070a 100%); color: #e6edf3; font-family: 'Inter', sans-serif; }
+    [data-testid="stSidebar"] { background-color: #0b0e14 !important; border-right: 1px solid #30363d; }
+
+    /* MASSIVE 3D KN LOGO */
+    .kn-logo-container {
+        display: flex; justify-content: center; padding: 40px 0;
+        perspective: 1000px;
     }
+    .kn-logo-3d {
+        width: 120px; height: 120px;
+        background: linear-gradient(135deg, #00ff88 0%, #3b82f6 100%);
+        border-radius: 24px;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Orbitron', sans-serif; font-size: 50px; font-weight: 900; color: #000;
+        box-shadow: 0 20px 50px rgba(0, 255, 136, 0.3), inset 0 0 20px rgba(255,255,255,0.4);
+        transform: rotateY(-15deg) rotateX(10deg);
+        animation: float 4s ease-in-out infinite;
+    }
+    @keyframes float { 0%, 100% { transform: translateY(0) rotateY(-15deg); } 50% { transform: translateY(-15px) rotateY(5deg); } }
 
-    /* Glass Bento Tiles */
+    /* BENTO GRID ANIMATIONS */
     .bento-card {
-        background: rgba(255, 255, 255, 0.03);
-        backdrop-filter: blur(25px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 24px; padding: 25px; margin-bottom: 20px;
-        transition: 0.3s ease-in-out;
+        background: rgba(22, 27, 34, 0.6);
+        backdrop-filter: blur(15px);
+        border: 1px solid #30363d;
+        border-radius: 24px; padding: 30px; margin-bottom: 20px;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    .bento-card:hover { border: 1px solid #00ff88; transform: translateY(-3px); }
+    .bento-card:hover { 
+        border: 1px solid #00ff88; 
+        box-shadow: 0 0 30px rgba(0, 255, 136, 0.15);
+        transform: scale(1.02);
+    }
 
-    .kn-label { color: #94a3b8; font-size: 11px; text-transform: uppercase; letter-spacing: 2.5px; font-weight: 700; }
-    .kn-value { font-size: 32px; font-weight: 700; color: #fff; margin-top: 5px; }
+    /* TYPOGRAPHY */
+    .label-accent { color: #8b949e; font-size: 10px; text-transform: uppercase; letter-spacing: 4px; font-weight: 800; }
+    .value-heavy { font-size: 40px; font-weight: 800; color: #ffffff; font-family: 'Orbitron', sans-serif; }
     
-    .news-card { 
-        background: linear-gradient(90deg, #1e293b55, #0f172a55); 
-        border-left: 5px solid #3b82f6; padding: 20px; border-radius: 12px; margin-bottom: 25px;
-    }
+    /* SUCCESS/ADMIN GLOW */
+    .admin-glow { color: #00ff88; text-shadow: 0 0 10px rgba(0,255,136,0.5); }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 2. CLOUD-READY DATABASE ENGINE ---
-DB_PATH = os.path.join(os.getcwd(), 'kn_v7.db')
+# --- 2. BACKEND & SESSION FIXES ---
+DB_PATH = os.path.join(os.getcwd(), 'kn_production.db')
 
 def get_db():
-    # check_same_thread=False is essential for multi-user Streamlit apps
     return sqlite3.connect(DB_PATH, check_same_thread=False)
 
 def init_db():
-    conn = get_db()
-    c = conn.cursor()
-    # Market Logic
-    c.execute('CREATE TABLE IF NOT EXISTS market (item TEXT PRIMARY KEY, price REAL)')
-    c.execute("INSERT OR IGNORE INTO market VALUES ('Inflation', 8.5), ('Milk', 65), ('Unga', 195)")
-    # News & Communication
-    c.execute('CREATE TABLE IF NOT EXISTS news (id INTEGER PRIMARY KEY, content TEXT, date TEXT)')
-    c.execute("INSERT OR IGNORE INTO news (id, content, date) VALUES (1, 'KUMPEL NITRY CORE System Online. Welcome Comrade.', '00:00')")
-    # Users
-    c.execute('CREATE TABLE IF NOT EXISTS users (username TEXT PRIMARY KEY, role TEXT)')
-    conn.commit()
-    conn.close()
+    conn = get_db(); c = conn.cursor()
+    c.execute('CREATE TABLE IF NOT EXISTS system_config (key TEXT PRIMARY KEY, val REAL)')
+    c.execute("INSERT OR IGNORE INTO system_config VALUES ('inflation', 8.5), ('price_egg', 20), ('price_milk', 65)")
+    c.execute('CREATE TABLE IF NOT EXISTS broadcast (id INTEGER PRIMARY KEY, msg TEXT, stamp TEXT)')
+    conn.commit(); conn.close()
 
 init_db()
 
-# Session Memory
-if 'auth' not in st.session_state: st.session_state.update({'auth': False, 'user': 'Guest', 'role': 'User'})
+if 'auth' not in st.session_state: st.session_state.update({'auth': False, 'role': 'User'})
 
-# --- 3. ACCESS GATEWAY ---
+# --- 3. THE GATEWAY ---
 if not st.session_state['auth']:
-    _, col, _ = st.columns([1, 1.2, 1])
+    st.markdown("<div class='kn-logo-container'><div class='kn-logo-3d'>KN</div></div>", unsafe_allow_html=True)
+    _, col, _ = st.columns([1, 1, 1])
     with col:
-        st.markdown("<br><br><div class='kn-logo'>KN</div>", unsafe_allow_html=True)
-        st.markdown("<h2 style='text-align:center; letter-spacing:3px;'>KUMPEL NITRY</h2>", unsafe_allow_html=True)
-        u = st.text_input("Comrade ID")
-        p = st.text_input("Security Key", type="password")
-        if st.button("AUTHENTICATE"):
+        u = st.text_input("IDENTITY ID")
+        p = st.text_input("SECURITY KEY", type="password")
+        if st.button("AUTHENTICATE NODE"):
             if u == "admin" and p == "admin":
-                st.session_state.update({'auth': True, 'user': 'Admin', 'role': 'Admin'})
+                st.session_state.update({'auth': True, 'role': 'Admin'})
             else:
-                st.session_state.update({'auth': True, 'user': u, 'role': 'User'})
+                st.session_state.update({'auth': True, 'role': 'User'})
             st.rerun()
     st.stop()
 
-# --- 4. COMMAND SIDEBAR ---
+# --- 4. NAVIGATION LOGIC ---
 with st.sidebar:
-    st.markdown("<div class='kn-logo' style='width:50px; height:50px; font-size:18px;'>KN</div>", unsafe_allow_html=True)
+    st.markdown("<div class='kn-logo-3d' style='width:60px; height:60px; font-size:24px; margin:0 auto;'>KN</div>", unsafe_allow_html=True)
     st.divider()
     if st.session_state['role'] == "Admin":
-        nav = st.radio("Management Console", ["Global Oversight", "News Desk", "Market Pulse"])
+        nav = st.selectbox("COMMAND CENTER", ["Oversight", "Market Control", "Broadcast Hub"])
     else:
-        nav = st.radio("Intelligence Hub", ["Hustle Dashboard", "Credit Risk Analyst", "Campus Rankings"])
+        nav = st.selectbox("USER INTEL", ["Dashboard", "Loan Engine", "Rankings"])
     
-    st.divider()
-    if st.button("TERMINATE SESSION"):
-        st.session_state.update({'auth': False})
+    if st.button("TERMINATE"):
+        st.session_state['auth'] = False
         st.rerun()
 
-# --- 5. ADMIN BACKEND (COMMAND CENTER) ---
+# --- 5. ADMIN COMMAND PANEL (IF ADMIN) ---
 if st.session_state['role'] == "Admin":
-    if nav == "Global Oversight":
-        st.title("Network Governance")
+    st.markdown(f"<h1>SYSTEM <span class='admin-glow'>GOVERNANCE</span></h1>", unsafe_allow_html=True)
+    
+    if nav == "Oversight":
         c1, c2, c3 = st.columns(3)
-        c1.markdown("<div class='bento-card'><p class='kn-label'>Total Liquidity</p><p class='kn-value'>KES 8.2M</p></div>", unsafe_allow_html=True)
-        c2.markdown("<div class='bento-card'><p class='kn-label'>Active Nodes</p><p class='kn-value'>4,820</p></div>", unsafe_allow_html=True)
-        c3.markdown("<div class='bento-card'><p class='kn-label'>Health Score</p><p class='kn-value' style='color:#00ff88;'>OPTIMAL</p></div>", unsafe_allow_html=True)
-        
+        with c1: st.markdown("<div class='bento-card'><p class='label-accent'>Network Liquidity</p><p class='value-heavy'>KES 12.4M</p></div>", unsafe_allow_html=True)
+        with c2: st.markdown("<div class='bento-card'><p class='label-accent'>Active Nodes</p><p class='value-heavy'>5,109</p></div>", unsafe_allow_html=True)
+        with c3: st.markdown("<div class='bento-card'><p class='label-accent'>Health</p><p class='value-heavy' style='color:#00ff88;'>100%</p></div>", unsafe_allow_html=True)
         st.markdown("<div class='bento-card'>", unsafe_allow_html=True)
-        st.subheader("Global Expenditure Trends")
-        st.line_chart(np.random.randn(20, 2))
+        st.subheader("Global Expenditure Flow")
+        st.area_chart(np.random.randn(20, 2))
         st.markdown("</div>", unsafe_allow_html=True)
 
-    elif nav == "News Desk":
-        st.title("Broadcast Intelligence")
-        msg = st.text_area("Update Global Feed:")
-        if st.button("Push Broadcast"):
-            conn = get_db(); c = conn.cursor()
-            c.execute("INSERT INTO news (content, date) VALUES (?,?)", (msg, datetime.now().strftime("%H:%M")))
-            conn.commit(); conn.close()
-            st.toast("Global News Updated.")
-
-    elif nav == "Market Pulse":
-        st.title("Market Variable Control")
+    elif nav == "Market Control":
+        st.markdown("<div class='bento-card'>", unsafe_allow_html=True)
+        st.subheader("Global Economic Variables")
         conn = get_db(); c = conn.cursor()
-        items = c.execute("SELECT * FROM market").fetchall()
-        for item, price in items:
-            new_val = st.number_input(f"Global {item} Index", value=float(price))
-            if st.button(f"Update {item}"):
-                c.execute("UPDATE market SET price = ? WHERE item = ?", (new_val, item))
-                conn.commit(); st.toast(f"Market Sync: {item}")
+        items = c.execute("SELECT * FROM system_config").fetchall()
+        for key, val in items:
+            new_v = st.number_input(f"Edit {key}", value=float(val))
+            if st.button(f"Update {key}"):
+                c.execute("UPDATE system_config SET val = ? WHERE key = ?", (new_v, key))
+                conn.commit(); st.success(f"{key} updated")
         conn.close()
-
-# --- 6. USER FRONTEND (STUDENT INTERFACE) ---
-else:
-    st.title("Intelligence Hub")
-    
-    # Live News Feed
-    conn = get_db(); c = conn.cursor()
-    feed = c.execute("SELECT content, date FROM news ORDER BY id DESC LIMIT 1").fetchone()
-    if feed:
-        st.markdown(f"<div class='news-card'><p class='kn-label' style='color:#3b82f6;'>LIVE BROADCAST | {feed[1]}</p>{feed[0]}</div>", unsafe_allow_html=True)
-    
-    if nav == "Hustle Dashboard":
-        col_1, col_2 = st.columns([2, 1])
-        with col_1:
-            st.markdown("<div class='bento-card'>", unsafe_allow_html=True)
-            st.markdown("<p class='kn-label'>Wallet Management</p>", unsafe_allow_html=True)
-            budget = st.number_input("Liquid Cash (Bob)", value=150)
-            
-            # Smart Logic from Admin Market Matrix
-            inf = c.execute("SELECT price FROM market WHERE item='Inflation'").fetchone()[0]
-            st.write(f"Current Market Inflation: `{inf}%`.")
-            
-            if budget < 100 * (1 + inf/100):
-                st.error("🚨 MSOTO ALERT: Budget insufficient for standard nutrition. AI suggests: Cereal Base.")
-            else:
-                st.success("💎 MDOSI STATUS: Capital levels are nominal for balanced protein.")
-            st.markdown("</div>", unsafe_allow_html=True)
-            
-            st.markdown("<div class='bento-card'>", unsafe_allow_html=True)
-            st.subheader("HELB Disbursement Tracker")
-            st.progress(0.35)
-            st.caption("22 Days remaining until next projected disbursement.")
-            st.markdown("</div>", unsafe_allow_html=True)
-
-        with col_2:
-            st.markdown("<div class='bento-card'><p class='kn-label'>Nitry Points</p><p class='kn-value' style='color:#00ff88;'>1,850</p></div>", unsafe_allow_html=True)
-            st.markdown("<div class='bento-card'><p class='kn-label'>Campus Rank</p><p class='kn-value' style='color:#3b82f6;'>#1 JKUAT</p></div>", unsafe_allow_html=True)
-    conn.close()
-
-    if nav == "Credit Risk Analyst":
-        st.markdown("<div class='bento-card'>", unsafe_allow_html=True)
-        st.subheader("Loan Debt Forecaster")
-        principal = st.number_input("Loan Amount", value=2000)
-        interest = st.slider("Interest Rate (%)", 1, 30, 15)
-        st.metric("Repayment Amount", f"KES {principal * (1 + interest/100):,.2f}")
-        if interest > 12: st.error("Predatory Interest Flagged.")
         st.markdown("</div>", unsafe_allow_html=True)
+
+    elif nav == "Broadcast Hub":
+        st.markdown("<div class='bento-card'>", unsafe_allow_html=True)
+        st.subheader("Emergency Transmission")
+        msg = st.text_area("Global Message")
+        if st.button("TRANSMIT"):
+            conn = get_db(); c = conn.cursor()
+            c.execute("INSERT INTO broadcast (msg, stamp) VALUES (?,?)", (msg, datetime.now().strftime("%H:%M")))
+            conn.commit(); conn.close()
+            st.toast("Message sent to all comrades!")
+        st.markdown("</div>", unsafe_allow_html=True)
+
+# --- 6. USER DASHBOARD (IF USER) ---
+else:
+    st.markdown("<h1>KUMPEL <span class='admin-glow'>NITRY</span> CORE</h1>", unsafe_allow_html=True)
+    
+    # Check for Broadcasts
+    conn = get_db(); c = conn.cursor()
+    last_msg = c.execute("SELECT msg, stamp FROM broadcast ORDER BY id DESC LIMIT 1").fetchone()
+    if last_msg:
+        st.warning(f"**CORE ALERT [{last_msg[1]}]:** {last_msg[0]}")
+    
+    if nav == "Dashboard":
+        col_l, col_r = st.columns([2, 1])
+        with col_l:
+            st.markdown("<div class='bento-card'>", unsafe_allow_html=True)
+            st.markdown("<p class='label-accent'>Hustle Intelligence</p>", unsafe_allow_html=True)
+            budget = st.number_input("Liquid Bob", value=150)
+            inf = c.execute("SELECT val FROM system_config WHERE key='inflation'").fetchone()[0]
+            if budget < (100 * (1 + inf/100)):
+                st.error("🚨 HALI NI MSOTO: Switch to high-efficiency calories (Nduma/Eggs).")
+            else:
+                st.success("💎 HALI NI MDOSI: Budget is optimal for meat-based protein.")
+            st.markdown("</div>", unsafe_allow_html=True)
+            
+        with col_r:
+            st.markdown("<div class='bento-card'><p class='label-accent'>Nitry Tokens</p><p class='value-heavy' style='color:#00ff88;'>2,400</p></div>", unsafe_allow_html=True)
+    conn.close()
